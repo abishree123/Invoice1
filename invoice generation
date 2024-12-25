@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-section, .invoice-section {
+            margin-bottom: 20px;
+            background-color: cornsilk;
+            color: chocolate;
+        }
+        .invoice {
+            border: 1px solid #000;
+            padding: 20px;
+            width: 500px;
+        }
+        .invoice h2 {
+            text-align: center;
+        }
+        .h2{
+            color: crimson;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-section">
+        <h2 class="h2">Enter Invoice Details</h2>
+        <form id="invoice-form">
+            <label for="customerName">Customer Name:</label><br>
+            <input type="text" id="customerName" name="customerName" required><br><br>
+            
+            <label for="customerAddress">Address:</label><br>
+            <input type="text" id="customerAddress" name="customerAddress" required><br><br>
+
+            <label for="itemDescription">Item Description:</label><br>
+            <input type="text" id="itemDescription" name="itemDescription" required><br><br>
+
+            <label for="quantity">Quantity:</label><br>
+            <input type="number" id="quantity" name="quantity" required><br><br>
+
+            <label for="pricePerUnit">Price per Unit:</label><br>
+            <input type="number" id="pricePerUnit" name="pricePerUnit" step="0.01" required><br><br>
+
+            <label for="taxRate">Tax Rate (%):</label><br>
+            <input type="number" id="taxRate" name="taxRate" step="0.01" required><br><br>
+
+            <input type="button" value="Generate Invoice" onclick="generateInvoice()">
+        </form>
+    </div>
+
+    <div class="invoice-section">
+        <div class="invoice" id="invoice" >
+            <!-- Invoice will be displayed here -->
+        </div>
+        <button onclick="downloadInvoice()">Download Invoice</button>
+        <button onclick="printInvoice()">Print Invoice</button>
+    </div>
+
+    <script>
+        function generateInvoice() {
+            const customerName = document.getElementById('customerName').value;
+            const customerAddress = document.getElementById('customerAddress').value;
+            const itemDescription = document.getElementById('itemDescription').value;
+            const quantity = document.getElementById('quantity').value;
+            const pricePerUnit = document.getElementById('pricePerUnit').value;
+            const taxRate = document.getElementById('taxRate').value;
+
+            const totalPrice = quantity * pricePerUnit;
+            const taxAmount = totalPrice * (taxRate / 100);
+            const totalAmount = totalPrice + taxAmount;
+
+            const invoiceHTML = `
+                <h3><u>Invoice Generation</u></h3>
+        <h2> PROZONE MALL </h2>
+                <p><strong>Customer Name:</strong> ${customerName}</p>
+                <p><strong>Address:</strong> ${customerAddress}</p>
+                <hr>
+    
+                <p><strong>Item Description:</strong> ${itemDescription}</p>
+                <p><strong>Quantity:</strong> ${quantity}</p>
+                <p><strong>Price per Unit:</strong> $${pricePerUnit}</p>
+                <p><strong>Total Price:</strong> $${totalPrice.toFixed(2)}</p>
+                <p><strong>Tax Rate:</strong> ${taxRate}%</p>
+                <p><strong>Tax Amount:</strong> $${taxAmount.toFixed(2)}</p>
+                <p><strong>Total Amount:</strong> $${totalAmount.toFixed(2)}</p>
+            
+            `;
+
+            document.getElementById('invoice').innerHTML = invoiceHTML;
+        }
+
+        function downloadInvoice() {
+            const invoiceElement = document.getElementById('invoice');
+            const invoiceHTML = invoiceElement.innerHTML;
+            const blob = new Blob([invoiceHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'invoice.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function printInvoice() {
+            const invoiceElement = document.getElementById('invoice');
+            const invoiceHTML = invoiceElement.innerHTML;
+            const originalContents = document.body.innerHTML;
+            document.body.innerHTML = invoiceHTML;
+            window.print();
+            document.body.innerHTML = originalContents;
+            location.reload();
+        }
+    </script>
+</body>
+</html>
